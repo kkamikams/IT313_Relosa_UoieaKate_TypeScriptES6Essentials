@@ -1,0 +1,120 @@
+# IT313 Enrollment Eligibility Report (TypeScript)
+
+A small TypeScript program that reads a list of enrollees, computes each student's average grade, decides their enrollment status, and prints a report to the console.
+
+**Author:** Uoiea Kate Relosa
+**Course:** IT313 - TypeScript ES6 Essentials
+
+---
+
+## What the program does
+
+1. Loads enrollee data with a simulated 800 ms API call (`getEnrollees`).
+2. Computes each student's average from their prelim, midterm, and final grades.
+3. Assigns a status (`PASSING` or `PROBATION`) using `getStatus`.
+4. Adds the remark `Needs consultation` for students on probation.
+5. Prints each student's line, the class average, and the passing count.
+6. Groups the reports by status using a generic `groupBy` function.
+
+---
+
+## TypeScript features used
+
+| Feature | Where it is used |
+| --- | --- |
+| Interfaces | `Enrollee` |
+| Type aliases | `EligibilityReport` |
+| Union types | `BatchId = string \| number` |
+| Type narrowing | `describeBatch` uses `typeof` |
+| Enums | `EnrollmentStatus` |
+| Optional properties | `remarks?: string \| undefined` |
+| Generics | `groupBy<T, K extends string>` |
+| Promises and async/await | `getEnrollees`, `main` |
+| Error handling | `try/catch` with `err instanceof Error` |
+| ES module imports | `import ... from "./gradeUtils.js"` |
+
+---
+
+## Project structure
+
+```
+.
+├── main.ts          # Main program
+├── gradeUtils.ts    # computeAverage, getStatus, EnrollmentStatus
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## How to run
+
+**1. Install dependencies**
+
+```bash
+npm install
+```
+
+**2. Run the program**
+
+```bash
+npx tsx main.ts
+```
+
+Or add this to `package.json` and use `npm start`:
+
+```json
+"scripts": {
+  "start": "tsx main.ts"
+}
+```
+
+### Alternative: compile with `tsc`
+
+```bash
+npx tsc
+node main.js
+```
+
+If your `tsconfig.json` has `"outDir": "dist"`, run `node dist/main.js` instead.
+
+---
+
+## Sample output
+
+```
+Batch reference: 2026-A
+=== IT313 Enrollment Eligibility Report (TypeScript) ===
+Ana Cruz    - Average: 87.67 - PASSING
+Bea Santos  - Average: 65.00 - PROBATION - Needs consultation
+Cid Ramos   - Average: 94.67 - PASSING
+Dex Alonzo  - Average: 55.00 - PROBATION - Needs consultation
+Eli Tan     - Average: 78.00 - PASSING
+Class Average: 76.07
+Passing: 3 / 5
+Grouped by status: { ... }
+```
+
+---
+
+## Simulating a failure
+
+In `main.ts`, change:
+
+```typescript
+const SIMULATE_FAILURE = false;
+```
+
+to `true` to test the error handling. The program will print:
+
+```
+Error fetching enrollees: Failed to connect to registrar API
+```
+
+---
+
+## Notes and fixes
+
+- **Imports use `.js` extensions** (`"./gradeUtils.js"`). This is required when `tsconfig.json` uses `"module": "nodenext"`, even though the real file is `gradeUtils.ts`.
+- **`remarks?: string | undefined`** is needed because `exactOptionalPropertyTypes` is enabled. Without `| undefined`, assigning `remarks: undefined` causes error `ts(2322)`.
+- **Use `tsx`, not `ts-node`.** The project uses TypeScript 7.x, and ts-node 10.9.2 is not compatible with it. ts-node also cannot map `.js` imports back to `.ts` files.
